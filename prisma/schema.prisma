@@ -14,10 +14,53 @@ datasource db {
 }
 
 model User {
-  id        Int  @id @default(autoincrement())
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
   name      String?
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  posts     Post[]
+  comments  Comment[]
+  votes     Vote[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Post {
+  id           Int       @id @default(autoincrement())
+  title        String
+  content      String
+  category     String
+  userId       Int
+  user         User      @relation(fields: [userId], references: [id])
+  comments     Comment[]
+  votes        Vote[]
+  bestAnswer   Comment?  @relation("BestAnswer", fields: [bestAnswerId], references: [id])
+  bestAnswerId Int?      @unique
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Comment {
+  id             Int      @id @default(autoincrement())
+  content        String
+  postId         Int
+  userId         Int
+  post           Post     @relation(fields: [postId], references: [id])
+  user           User     @relation(fields: [userId], references: [id])
+  votes          Vote[]
+  isBestAnswer   Boolean  @default(false)
+  bestAnswerPost Post?    @relation("BestAnswer")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  value     Int // +1 for upvote, -1 for downvote
+  postId    Int? // For question votes
+  commentId Int? // For answer votes
+  userId    Int
+  post      Post?    @relation(fields: [postId], references: [id])
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
