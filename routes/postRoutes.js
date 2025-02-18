@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPost, getAllPosts, getPostById ,updatePost} from '../controllers/post/postController.js';
+import { createPost, getAllPosts, getPostById ,updatePost,deletePost} from '../controllers/post/postController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -14,5 +14,7 @@ router.get('/posts', getAllPosts);
 router.get('/post/:id', getPostById);
 
 router.patch('/post/:id', authMiddleware, updatePost);
+
+router.delete('/post/:id', authMiddleware, deletePost);
 
 export default router;

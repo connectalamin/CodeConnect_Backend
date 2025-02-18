@@ -146,3 +146,37 @@ export const updatePost = async (req, res) => {
     res.status(500).json({ error: 'Something went wrong', details: error.message }); 
   }
 };
+
+// Delete Post
+export const deletePost = async (req, res) => {
+  try {
+    const postId = parseInt(req.params.id);
+    const userId = req.userId; // From auth middleware
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID not found in request.' });
+    }
+
+    // Fetch the post to ensure it exists and belongs to the user
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    if (post.userId !== userId) {
+      return res.status(403).json({ error: 'Forbidden. You are not authorized to delete this post.' });
+    }
+
+    const deletedPost = await prisma.post.delete({
+      where: { id: postId },
+    });
+
+    res.json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting post:', error); // Log the error details
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
+  }
+};
