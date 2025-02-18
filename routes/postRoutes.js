@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPost, getAllPosts, getPostById } from '../controllers/post/postController.js';
+import { createPost, getAllPosts, getPostById ,updatePost} from '../controllers/post/postController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -11,6 +11,8 @@ router.post('/post', authMiddleware, createPost);
 router.get('/posts', getAllPosts);
 
 // Public Route: Get a Single Question by ID
-router.get('/posts/:id', getPostById);
+router.get('/post/:id', getPostById);
+
+router.patch('/post/:id', authMiddleware, updatePost);
 
 export default router;
