@@ -27,127 +27,127 @@ export const createComment = async (req, res) => {
     }
   };
 
-  // Get comment by post ID
-  export const getCommentsForPost = async (req, res) => {
-    try {
-      const postId = parseInt(req.params.id);
-  
-      if (isNaN(postId)) {
-        return res.status(400).json({ error: 'Invalid post ID' });
-      }
-  
-      const comments = await prisma.comment.findMany({
-        where: { postId },
-        include: {
-          user: true,
-          votes: true
-        }
-      });
-  
-      // Aggregate upvotes and downvotes for each comment
-      const commentsWithVotes = comments.map(comment => {
-        const upvotes = comment.votes.filter(vote => vote.value === 1).length;
-        const downvotes = comment.votes.filter(vote => vote.value === -1).length;
-        const totalVotes = upvotes - downvotes;
-  
-        return {
-          ...comment,
-          upvotes,
-          downvotes,
-          totalVotes
-        };
-      });
-  
-      res.json({ comments: commentsWithVotes });
-    } catch (error) {
-      console.error('Error fetching comments:', error); // Log the error details
-      res.status(500).json({ error: 'Something went wrong', details: error.message });
-    }
-  };
+// Get comment by post ID
+export const getCommentsForPost = async (req, res) => {
+  try {
+    const postId = parseInt(req.params.id);
 
-  // Update Comment 
-  export const updateComment = async (req, res) => {
-    try {
-      const commentId = parseInt(req.params.commentId);
-      const { content } = req.body;
-      const userId = req.userId; // From auth middleware
-  
-      if (!userId) {
-        return res.status(400).json({ error: 'User ID not found in request.' });
-      }
-  
-      if (isNaN(commentId)) {
-        return res.status(400).json({ error: 'Invalid comment ID' });
-      }
-  
-      // Fetch the comment to ensure it exists and belongs to the user
-      const comment = await prisma.comment.findUnique({
-        where: { id: commentId },
-      });
-  
-      if (!comment) {
-        return res.status(404).json({ error: 'Comment not found' });
-      }
-  
-      if (comment.userId !== userId) {
-        return res.status(403).json({ error: 'Forbidden. You are not authorized to update this comment.' });
-      }
-  
-      // Update the comment with the provided fields
-      const updatedComment = await prisma.comment.update({
-        where: { id: commentId },
-        data: {
-          content,
-        },
-      });
-  
-      res.json({ message: 'Comment updated successfully', comment: updatedComment });
-    } catch (error) {
-      console.error('Error updating comment:', error); // Log the error details
-      res.status(500).json({ error: 'Something went wrong', details: error.message });
+    if (isNaN(postId)) {
+      return res.status(400).json({ error: 'Invalid post ID' });
     }
-  };
 
-  //Delete Comment
-  export const deleteComment = async (req, res) => {
-    try {
-      const commentId = parseInt(req.params.commentId);
-      const userId = req.userId; // From authMiddleware
-  
-      if (!userId) {
-        return res.status(400).json({ error: 'User ID not found in request.' });
+    const comments = await prisma.comment.findMany({
+      where: { postId },
+      include: {
+        user: true,
+        votes: true
       }
-  
-      if (isNaN(commentId)) {
-        return res.status(400).json({ error: 'Invalid comment ID' });
-      }
-  
-      // Fetch the comment to ensure it exists and belongs to the user
-      const comment = await prisma.comment.findUnique({
-        where: { id: commentId },
-      });
-  
-      if (!comment) {
-        return res.status(404).json({ error: 'Comment not found' });
-      }
-  
-      if (comment.userId !== userId) {
-        return res.status(403).json({ error: 'Forbidden. You are not authorized to delete this comment.' });
-      }
-  
-      const deletedComment = await prisma.comment.delete({
-        where: { id: commentId },
-      });
-  
-      res.json({ message: 'Comment deleted successfully', comment: deletedComment });
-    } catch (error) {
-      console.error('Error deleting comment:', error); 
-  
-      // Handle specific Prisma errors if needed
-      if (error.code === 'P2025') {
-        return res.status(404).json({ error: 'Comment not found' });
-      }
-  
-      res.status(500).json({ error: 'Something went wrong', details: error.message });
+    });
+
+    // Aggregate upvotes and downvotes for each comment
+    const commentsWithVotes = comments.map(comment => {
+      const upvotes = comment.votes.filter(vote => vote.value === 1).length;
+      const downvotes = comment.votes.filter(vote => vote.value === -1).length;
+      const totalVotes = upvotes - downvotes;
+
+      return {
+        ...comment,
+        upvotes,
+        downvotes,
+        totalVotes
+      };
+    });
+
+    res.json({ comments: commentsWithVotes });
+  } catch (error) {
+    console.error('Error fetching comments:', error); // Log the error details
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
+  }
+};
+
+// Update Comment 
+export const updateComment = async (req, res) => {
+  try {
+    const commentId = parseInt(req.params.commentId);
+    const { content } = req.body;
+    const userId = req.userId; // From auth middleware
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID not found in request.' });
     }
-  };
+
+    if (isNaN(commentId)) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
+    }
+
+    // Fetch the comment to ensure it exists and belongs to the user
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+    });
+
+    if (!comment) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    if (comment.userId !== userId) {
+      return res.status(403).json({ error: 'Forbidden. You are not authorized to update this comment.' });
+    }
+
+    // Update the comment with the provided fields
+    const updatedComment = await prisma.comment.update({
+      where: { id: commentId },
+      data: {
+        content,
+      },
+    });
+
+    res.json({ message: 'Comment updated successfully', comment: updatedComment });
+  } catch (error) {
+    console.error('Error updating comment:', error); // Log the error details
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
+  }
+};
+
+//Delete Comment
+export const deleteComment = async (req, res) => {
+  try {
+    const commentId = parseInt(req.params.commentId);
+    const userId = req.userId; // From authMiddleware
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID not found in request.' });
+    }
+
+    if (isNaN(commentId)) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
+    }
+
+    // Fetch the comment to ensure it exists and belongs to the user
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+    });
+
+    if (!comment) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    if (comment.userId !== userId) {
+      return res.status(403).json({ error: 'Forbidden. You are not authorized to delete this comment.' });
+    }
+
+    const deletedComment = await prisma.comment.delete({
+      where: { id: commentId },
+    });
+
+    res.json({ message: 'Comment deleted successfully', comment: deletedComment });
+  } catch (error) {
+    console.error('Error deleting comment:', error); 
+
+    // Handle specific Prisma errors if needed
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
+  }
+};
