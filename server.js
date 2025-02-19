@@ -5,6 +5,8 @@ import authRoutes from "./routes/authRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import voteRoutes from "./routes/voteRoutes.js"
+import profileRoutes from "./routes/profileRoutes.js"
+
 
 dotenv.config();
 const app = express();
@@ -18,7 +20,7 @@ app.use("/auth", authRoutes);
 app.use("/api", postRoutes);
 app.use("/api/post", commentRoutes);
 app.use("/api/", voteRoutes);
-
+app.use('/api', profileRoutes);
 
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

@@ -60,6 +60,9 @@ export const createOrUpdateVote = async (req, res) => {
           });
         }
 
+        // Recalculate and update karma points
+        await updateKarmaPoints(userId);
+
         return res.json({ message: 'Vote removed successfully' });
       } else {
         // If the user clicks the opposite vote button, update the vote
@@ -72,14 +75,17 @@ export const createOrUpdateVote = async (req, res) => {
         if (postId) {
           await prisma.post.update({
             where: { id: postId },
-            data: { voteCount: { increment: 2 * value - existingVote.value } }
+            data: { voteCount: { increment: value - existingVote.value } }
           });
         } else if (commentId) {
           await prisma.comment.update({
             where: { id: commentId },
-            data: { voteCount: { increment: 2 * value - existingVote.value } }
+            data: { voteCount: { increment: value - existingVote.value } }
           });
         }
+
+        // Recalculate and update karma points
+        await updateKarmaPoints(userId);
 
         return res.json({ message: 'Vote updated successfully', vote: updatedVote });
       }
@@ -103,9 +109,48 @@ export const createOrUpdateVote = async (req, res) => {
       });
     }
 
+    // Recalculate and update karma points
+    await updateKarmaPoints(userId);
+
     res.status(201).json({ message: 'Vote created successfully', vote });
   } catch (error) {
     console.error('Error creating or updating vote:', error); // Log the error details
     res.status(500).json({ error: 'Something went wrong', details: error.message });
+  }
+};
+
+// Helper function to recalculate and update karma points
+const updateKarmaPoints = async (userId) => {
+  try {
+    // Fetch the user to recalculate karma points
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        posts: true,
+        comments: true,
+        votes: true
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Calculate karma points
+    const upvotesOnPosts = user.posts.reduce((sum, post) => sum + post.voteCount, 0);
+    const upvotesOnComments = user.comments.reduce((sum, comment) => sum + comment.voteCount, 0);
+    const downvotesOnPosts = user.votes.filter(vote => vote.postId && vote.value === -1).length;
+    const downvotesOnComments = user.votes.filter(vote => vote.commentId && vote.value === -1).length;
+    const bestAnswers = user.comments.filter(comment => comment.isBestAnswer).length;
+
+    const karmaPoints = upvotesOnPosts + upvotesOnComments - downvotesOnPosts - downvotesOnComments + (bestAnswers * 10);
+
+    // Update the user's karma points in the database
+    await prisma.user.update({
+      where: { id: userId },
+      data: { karmaPoints }
+    });
+  } catch (error) {
+    console.error('Error updating karma points:', error); // Log the error details
   }
 };

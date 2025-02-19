@@ -189,13 +189,44 @@ export const checkBestAnswer = async (req,res)=>{
       data: { isBestAnswer: isBestAnswer },
     });
     
-        res.json({ message: 'Best answer marked successfully', post: updatedPost, comment: updatedComment });
-        if (!comment) {
-          return res.status(404).json({ error: 'Comment not found' });
-        }
+    await updateKarmaPoints(comment.userId);
+
+    const message = isBestAnswer
+    ? 'Best answer marked successfully'
+    : 'Best answer removed successfully';
+
+  res.json({ message, post: updatedPost, comment: updatedComment });
 
   } catch (error) {
     console.error("Error marking best answer",error);
     res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 } 
+
+// Helper function to recalculate and update karma points
+const updateKarmaPoints = async (userId) => {
+  // Fetch the user to recalculate karma points
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      posts: true,
+      comments: true,
+      votes: true
+    }
+  });
+
+  // Calculate karma points
+  const upvotesOnPosts = user.posts.reduce((sum, post) => sum + post.voteCount, 0);
+  const upvotesOnComments = user.comments.reduce((sum, comment) => sum + comment.voteCount, 0);
+  const downvotesOnPosts = user.votes.filter(vote => vote.postId && vote.value === -1).length;
+  const downvotesOnComments = user.votes.filter(vote => vote.commentId && vote.value === -1).length;
+  const bestAnswers = user.comments.filter(comment => comment.isBestAnswer).length;
+
+  const karmaPoints = upvotesOnPosts + upvotesOnComments - downvotesOnPosts - downvotesOnComments + (bestAnswers * 10);
+
+  // Update the user's karma points in the database
+  await prisma.user.update({
+    where: { id: userId },
+    data: { karmaPoints }
+  });
+};

@@ -140,6 +140,8 @@ export const updatePost = async (req, res) => {
       },
     });
 
+
+    
     res.json({ message: 'Post updated successfully', post: updatedPost });
   } catch (error) {
     console.error('Error updating post:', error); // Log the error details
