@@ -151,3 +151,51 @@ export const deleteComment = async (req, res) => {
     res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 };
+
+// Best Answer
+
+export const checkBestAnswer = async (req,res)=>{
+  try {
+    const commentId = parseInt(req.params.commentId);
+    const userId=req.userId;
+
+       
+    
+        if (isNaN(commentId)) {
+          return res.status(400).json({ error: 'Invalid comment ID' });
+        }
+      
+        // Fetch the comment to ensure it exists and belongs to the user
+        const comment = await prisma.comment.findUnique({
+          where: { id: commentId },
+          include:{
+            post:true,
+          }
+        });
+        if (comment.post.userId !== userId) {
+          return res.status(403).json({ error: 'Forbidden. You are not authorized to mark this comment as the best answer.' });
+        }
+    // Toggle the isBestAnswer field
+    const isBestAnswer = !comment.isBestAnswer;
+
+    // Update the post to set or unset the best answer
+    const updatedPost = await prisma.post.update({
+      where: { id: comment.postId },
+      data: { bestAnswerId: isBestAnswer ? commentId : null },
+    });
+
+    const updatedComment = await prisma.comment.update({
+      where: { id: commentId },
+      data: { isBestAnswer: isBestAnswer },
+    });
+    
+        res.json({ message: 'Best answer marked successfully', post: updatedPost, comment: updatedComment });
+        if (!comment) {
+          return res.status(404).json({ error: 'Comment not found' });
+        }
+
+  } catch (error) {
+    console.error("Error marking best answer",error);
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
+  }
+} 
