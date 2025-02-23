@@ -33,14 +33,24 @@ export const getAllPosts = async (req, res) => {
   try {
     const posts = await prisma.post.findMany({
       include: {
-        user: true,
-        comments: {
-          include: {
-            user: true,
-            votes: true,
+        user: {
+          select: {
+            name: true,
+            image: true,
           },
         },
-        votes: true,
+        comments: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                image: true,
+              },
+            },
+            votes: true, // Include votes for each comment
+          },
+        },
+        votes: true, // Include votes for each post
       },
     });
 
@@ -60,7 +70,8 @@ export const getAllPosts = async (req, res) => {
 
     res.status(200).json({ posts: postsWithVotes });
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong" });
+    console.error('Error fetching posts:', error); // Log the error details
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 };
 
@@ -72,15 +83,25 @@ export const getPostById = async (req, res) => {
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: {
-        user: true,
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
         comments: {
           include: {
-            user: true,
-            votes: true
-          }
+            user: {
+              select: {
+                name: true,
+                image: true,
+              },
+            },
+            votes: true, // Include votes for each comment
+          },
         },
-        votes: true
-      }
+        votes: true, // Include votes for the post
+      },
     });
 
     if (!post) {
@@ -102,10 +123,9 @@ export const getPostById = async (req, res) => {
     res.json({ post: postWithVotes });
   } catch (error) {
     console.error('Error fetching post by ID:', error); // Log the error details
-    res.status(500).json({ error: 'Something went wrong', details: error.message }); 
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 };
-
 // Update Post
 export const updatePost = async (req, res) => {
   try {
