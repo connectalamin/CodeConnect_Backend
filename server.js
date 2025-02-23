@@ -11,8 +11,12 @@ import profileRoutes from "./routes/profileRoutes.js"
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow your Vite dev server
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow necessary methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
+}));
 
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
