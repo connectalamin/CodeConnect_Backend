@@ -24,7 +24,7 @@ export const signup = async (req, res) => {
     //  Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(409).json({ error: 'User already exists' });
     }
 
     //  Hash the password (Using 12 rounds for extra security)
@@ -55,7 +55,7 @@ export const login = async (req, res) => {
     //  Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     //  Generate JWT token (Expires in 1 hour)
@@ -66,5 +66,20 @@ export const login = async (req, res) => {
     res.json({ message: 'Login successful', token });
   } catch (error) {
     res.status(500).json({ error: 'Something went wrong' });
+  }
+};
+
+//  Logout Controller
+export const logout = async (req, res) => {
+  try {
+    
+    res.json({ 
+      message: 'Logged out successfully',
+   
+      expiresIn: new Date(0)
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ error: 'Something went wrong during logout' });
   }
 };

@@ -11,7 +11,7 @@ router.post('/post', authMiddleware, createPost);
 router.get('/posts', getAllPosts);
 
 // Public Route: Get a Single Question by ID
-router.get('/post/:id', getPostById);
+router.get('/post/:id',authMiddleware, getPostById);
 
 router.patch('/post/:id', authMiddleware, updatePost);
 

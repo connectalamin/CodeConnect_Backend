@@ -1,4 +1,6 @@
 import prisma from '../../DB/db.config.js';
+import cloudinary from  '../../utils/cloudinary.config.js';
+import upload from '../../utils/multer.config.js';
 
 // Get User Profile
 export const getUserProfile = async (req, res) => {
@@ -61,7 +63,7 @@ export const getUserProfile = async (req, res) => {
     ];
 
     // Determine ranking based on karma points
-    let ranking = ranks.find(r => karmaPoints >= r.threshold).rank;
+    let ranking = ranks.find(r => karmaPoints >= r.threshold)?.rank|| 'Private';
 
     const userProfile = {
       ...user,
@@ -80,14 +82,16 @@ export const getUserProfile = async (req, res) => {
 // Update User Profile
 export const updateUserProfile = async (req, res) => {
   try {
-    const userId = req.userId; // From auth middleware
-    const { image, classId, session, batch, dept, university, occupation, expertise } = req.body;
+    const userId = req.userId;
+    console.log('req.body:', req.body); // Debug full body
+    const { name, classId, session, batch, dept, university, occupation, expertise } = req.body;
+
+    console.log('Raw expertise from req.body:', expertise); // Debug raw value
 
     if (!userId) {
       return res.status(400).json({ error: 'User ID not found in request.' });
     }
 
-    // Fetch the user to ensure it exists
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -96,27 +100,68 @@ export const updateUserProfile = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Update the user profile with the provided fields
+    let imageUrl = user.image;
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              resource_type: 'image',
+              public_id: `user_${userId}_profile`,
+              width: 500,
+              height: 500,
+              crop: 'fit',
+              fetch_format: 'auto',
+              quality: 'auto',
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          )
+          .end(req.file.buffer);
+      });
+      imageUrl = result.secure_url;
+    }
+
+    // Safely parse expertise
+    let parsedExpertise = [];
+    if (expertise) {
+      try {
+        parsedExpertise = JSON.parse(expertise);
+        if (!Array.isArray(parsedExpertise)) {
+          parsedExpertise = [];
+        }
+      } catch (error) {
+        console.error('Failed to parse expertise:', error);
+        parsedExpertise = [];
+      }
+    }
+    console.log('Parsed expertise:', parsedExpertise); // Debug parsed value
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
-        image,
+        name: name || user.name,
+        image: imageUrl,
         classId,
         session,
         batch,
         dept,
         university,
         occupation,
-        expertise: expertise || [],
+        expertise: parsedExpertise, // Use parsed value
       },
     });
 
     res.json({ message: 'Profile updated successfully', user: updatedUser });
   } catch (error) {
-    console.error('Error updating user profile:', error); // Log the error details
+    console.error('Error updating user profile:', error);
     res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 };
+
+export const uploadMiddleware = upload.single('image');
 
 const calculateTimeAgo = (createdAt) => {
     const now = new Date();
