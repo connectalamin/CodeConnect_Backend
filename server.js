@@ -13,7 +13,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 app.use(cors({
   origin: 'http://localhost:5173', // Allow your Vite dev server
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow necessary methods
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'], // Allow necessary methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
 }));
 
