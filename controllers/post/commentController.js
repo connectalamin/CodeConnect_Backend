@@ -1,4 +1,5 @@
 import prisma from "../../DB/db.config.js";
+import { calculateRanking } from '../../utils/rankingUtils.js';
 
 // Create a comment
 export const createComment = async (req, res) => {
@@ -39,28 +40,38 @@ export const getCommentsForPost = async (req, res) => {
     const comments = await prisma.comment.findMany({
       where: { postId },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            karmaPoints: true // Include karmaPoints
+          }
+        },
         votes: true
       }
     });
 
-    // Aggregate upvotes and downvotes for each comment
     const commentsWithVotes = comments.map(comment => {
       const upvotes = comment.votes.filter(vote => vote.value === 1).length;
       const downvotes = comment.votes.filter(vote => vote.value === -1).length;
       const totalVotes = upvotes - downvotes;
+      const ranking = calculateRanking(comment.user.karmaPoints); // Use karmaPoints
 
       return {
         ...comment,
         upvotes,
         downvotes,
-        totalVotes
+        totalVotes,
+        user: {
+          ...comment.user,
+          ranking // Attach ranking to user object
+        }
       };
     });
 
     res.json({ comments: commentsWithVotes });
   } catch (error) {
-    console.error('Error fetching comments:', error); // Log the error details
+    console.error('Error fetching comments:', error);
     res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 };
@@ -160,21 +171,20 @@ export const checkBestAnswer = async (req,res)=>{
     const userId=req.userId;
 
        
-    
-        if (isNaN(commentId)) {
-          return res.status(400).json({ error: 'Invalid comment ID' });
-        }
-      
-        // Fetch the comment to ensure it exists and belongs to the user
-        const comment = await prisma.comment.findUnique({
-          where: { id: commentId },
-          include:{
-            post:true,
-          }
-        });
-        if (comment.post.userId !== userId) {
-          return res.status(403).json({ error: 'Forbidden. You are not authorized to mark this comment as the best answer.' });
-        }
+    if (isNaN(commentId)) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
+    }
+  
+    // Fetch the comment to ensure it exists and belongs to the user
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      include:{
+        post:true,
+      }
+    });
+    if (comment.post.userId !== userId) {
+      return res.status(403).json({ error: 'Forbidden. You are not authorized to mark this comment as the best answer.' });
+    }
     // Toggle the isBestAnswer field
     const isBestAnswer = !comment.isBestAnswer;
 

@@ -1,6 +1,7 @@
 import prisma from '../../DB/db.config.js';
 import cloudinary from  '../../utils/cloudinary.config.js';
 import upload from '../../utils/multer.config.js';
+import { calculateRanking } from '../../utils/rankingUtils.js';
 
 // Get User Profile
 export const getUserProfile = async (req, res) => {
@@ -45,25 +46,7 @@ export const getUserProfile = async (req, res) => {
       });
 
 
-    const ranks = [
-      { threshold: 50000, rank: 'Field Marshal' },
-      { threshold: 25000, rank: 'Marshal' },
-      { threshold: 10000, rank: 'General' },
-      { threshold: 6000, rank: 'Lieutenant General' },
-      { threshold: 4000, rank: 'Major General' },
-      { threshold: 2500, rank: 'Brigadier General' },
-      { threshold: 1500, rank: 'Colonel' },
-      { threshold: 1000, rank: 'Lieutenant Colonel' },
-      { threshold: 700, rank: 'Major' },
-      { threshold: 400, rank: 'Captain' },
-      { threshold: 200, rank: 'Lieutenant' },
-      { threshold: 50, rank: 'Sergeant' },
-      { threshold: 20, rank: 'Corporal' },
-      { threshold: 0, rank: 'Private' } // Default, lowest rank
-    ];
-
-    // Determine ranking based on karma points
-    let ranking = ranks.find(r => karmaPoints >= r.threshold)?.rank|| 'Private';
+    const ranking = calculateRanking(karmaPoints);
 
     const userProfile = {
       ...user,

@@ -1,4 +1,5 @@
 import prisma from "../../DB/db.config.js";
+import { calculateRanking } from "../../utils/rankingUtils.js";
 
 // Create a new post
 export const createPost = async (req, res) => {
@@ -87,6 +88,7 @@ export const getPostById = async (req, res) => {
           select: {
             name: true,
             image: true,
+            karmaPoints: true, // Include karmaPoints
           },
         },
         comments: {
@@ -120,12 +122,24 @@ export const getPostById = async (req, res) => {
       totalVotes
     };
 
-    res.json({ post: postWithVotes });
+    // Determine ranking based on karma points
+    const ranking = calculateRanking(post.user.karmaPoints);
+
+    const postWithRanking = {
+      ...postWithVotes,
+      user: {
+        ...postWithVotes.user,
+        ranking
+      }
+    };
+
+    res.json({ post: postWithRanking });
   } catch (error) {
     console.error('Error fetching post by ID:', error); // Log the error details
     res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 };
+
 // Update Post
 export const updatePost = async (req, res) => {
   try {

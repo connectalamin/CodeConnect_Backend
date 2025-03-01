@@ -1,4 +1,5 @@
-import prisma from "../../DB/db.config.js";
+import prisma from '../../DB/db.config.js';
+import { calculateRanking } from '../../utils/rankingUtils.js';
 
 // Upvote/Downvote a Post or Comment
 export const createOrUpdateVote = async (req, res) => {
@@ -61,9 +62,9 @@ export const createOrUpdateVote = async (req, res) => {
         }
 
         // Recalculate and update karma points
-        await updateKarmaPoints(userId);
+        const { karmaPoints, ranking } = await updateKarmaPoints(userId);
 
-        return res.json({ message: 'Vote removed successfully' });
+        return res.json({ message: 'Vote removed successfully', karmaPoints, ranking });
       } else {
         // If the user clicks the opposite vote button, update the vote
         const updatedVote = await prisma.vote.update({
@@ -85,9 +86,9 @@ export const createOrUpdateVote = async (req, res) => {
         }
 
         // Recalculate and update karma points
-        await updateKarmaPoints(userId);
+        const { karmaPoints, ranking } = await updateKarmaPoints(userId);
 
-        return res.json({ message: 'Vote updated successfully', vote: updatedVote });
+        return res.json({ message: 'Vote updated successfully', vote: updatedVote, karmaPoints, ranking });
       }
     }
 
@@ -110,9 +111,9 @@ export const createOrUpdateVote = async (req, res) => {
     }
 
     // Recalculate and update karma points
-    await updateKarmaPoints(userId);
+    const { karmaPoints, ranking } = await updateKarmaPoints(userId);
 
-    res.status(201).json({ message: 'Vote created successfully', vote });
+    res.status(201).json({ message: 'Vote created successfully', vote, karmaPoints, ranking });
   } catch (error) {
     console.error('Error creating or updating vote:', error); // Log the error details
     res.status(500).json({ error: 'Something went wrong', details: error.message });
@@ -150,6 +151,11 @@ const updateKarmaPoints = async (userId) => {
       where: { id: userId },
       data: { karmaPoints }
     });
+
+    // Determine ranking based on karma points
+    const ranking = calculateRanking(karmaPoints);
+
+    return { karmaPoints, ranking };
   } catch (error) {
     console.error('Error updating karma points:', error); // Log the error details
   }
