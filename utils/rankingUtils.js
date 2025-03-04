@@ -1,19 +1,19 @@
 // Utility function to calculate user ranking based on karma points
 export const calculateRanking = (karmaPoints) => {
   const ranks = [
-    { threshold: 50000, rank: 'Field Marshal' },
-    { threshold: 25000, rank: 'Marshal' },
-    { threshold: 10000, rank: 'General' },
-    { threshold: 6000, rank: 'Lieutenant General' },
-    { threshold: 4000, rank: 'Major General' },
-    { threshold: 2500, rank: 'Brigadier General' },
-    { threshold: 1500, rank: 'Colonel' },
-    { threshold: 1000, rank: 'Lieutenant Colonel' },
-    { threshold: 700, rank: 'Major' },
-    { threshold: 400, rank: 'Captain' },
-    { threshold: 200, rank: 'Lieutenant' },
+    { threshold: 25000, rank: 'Field Marshal' },
+    { threshold: 10000, rank: 'Marshal' },
+    { threshold: 70000, rank: 'General' },
+    { threshold: 5000, rank: 'Lieutenant General' },
+    { threshold: 3000, rank: 'Major General' },
+    { threshold: 2000, rank: 'Brigadier General' },
+    { threshold: 1300, rank: 'Colonel' },
+    { threshold: 800, rank: 'Lieutenant Colonel' },
+    { threshold: 400, rank: 'Major' },
+    { threshold: 200, rank: 'Captain' },
+    { threshold: 100, rank: 'Lieutenant' },
     { threshold: 50, rank: 'Sergeant' },
-    { threshold: 20, rank: 'Corporal' },
+    { threshold: 10, rank: 'Corporal' },
     { threshold: 0, rank: 'Private' } // Default, lowest rank
   ];
 

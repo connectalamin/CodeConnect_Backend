@@ -167,3 +167,47 @@ const calculateTimeAgo = (createdAt) => {
     }
     return 'just now';
   };
+
+  // Get Public User Profile by ID
+  export const getPublicUserProfile = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const requesterId = req.userId; // From auth middleware, if present
+  
+      const user = await prisma.user.findUnique({
+        where: { id: parseInt(id) },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          classId: true,
+          session: true,
+          batch: true,
+          dept: true,
+          university: true,
+          occupation: true,
+          expertise: true,
+          karmaPoints: true,
+          createdAt: true,
+          email: requesterId && String(requesterId) === String(id), // Only include email if requester is the user
+        },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      const ranking = calculateRanking(user.karmaPoints);
+      const userProfile = {
+        ...user,
+        karmaPoints: user.karmaPoints,
+        ranking,
+        timeJoined: calculateTimeAgo(user.createdAt),
+      };
+  
+      res.json({ user: userProfile });
+    } catch (error) {
+      console.error('Error fetching public user profile:', error);
+      res.status(500).json({ error: 'Something went wrong', details: error.message });
+    }
+  };
