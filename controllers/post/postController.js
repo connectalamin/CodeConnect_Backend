@@ -38,6 +38,7 @@ export const getAllPosts = async (req, res) => {
           select: {
             name: true,
             image: true,
+            karmaPoints: true, 
           },
         },
         comments: {
