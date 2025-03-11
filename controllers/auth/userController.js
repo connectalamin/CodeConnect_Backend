@@ -45,24 +45,19 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    //  Find the user by email
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-
-    //  Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-
-    //  Generate JWT token (Expires in 1 hour)
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '24h',
-    });
-
+    const token = jwt.sign(
+      { id: user.id, role: user.role }, // Include role in the token
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
     res.json({ message: 'Login successful', token });
   } catch (error) {
     res.status(500).json({ error: 'Something went wrong' });
@@ -81,5 +76,32 @@ export const logout = async (req, res) => {
   } catch (error) {
     console.error('Logout error:', error);
     res.status(500).json({ error: 'Something went wrong during logout' });
+  }
+};
+
+
+// Admin Role
+// Delete User
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userIdToDelete = parseInt(id);
+
+    // Prevent admin from deleting themselves
+    if (req.userId === userIdToDelete) {
+      return res.status(400).json({ error: 'Cannot delete yourself' });
+    }
+
+    // Check if user exists
+    const user = await prisma.user.findUnique({ where: { id: userIdToDelete } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await prisma.user.delete({ where: { id: userIdToDelete } });
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
   }
 };

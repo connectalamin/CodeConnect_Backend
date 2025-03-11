@@ -1,31 +1,41 @@
 import prisma from "../../DB/db.config.js";
 import { calculateRanking } from "../../utils/rankingUtils.js";
 
-// Create a new post
+// Create Post
 export const createPost = async (req, res) => {
   try {
-    const { title, content, category } = req.body;
+    const { title, content, categoryId } = req.body;
     const userId = req.userId; // From auth middleware
 
     if (!userId) {
-      return res.status(400).json({ error: "User ID not found in request." });
+      return res.status(400).json({ error: 'User ID not found in request.' });
+    }
+
+    if (!categoryId) {
+      return res.status(400).json({ error: 'Category ID is required' });
+    }
+
+    // Validate category exists
+    const category = await prisma.category.findUnique({
+      where: { id: parseInt(categoryId) },
+    });
+    if (!category) {
+      return res.status(400).json({ error: 'Invalid category ID' });
     }
 
     const post = await prisma.post.create({
       data: {
         title,
         content,
-        category,
+        categoryId: parseInt(categoryId),
         userId,
       },
     });
 
-    res.status(201).json({ message: "Post created successfully", post });
+    res.status(201).json({ message: 'Post created successfully', post });
   } catch (error) {
-    console.error("Error creating post:", error); // Log the error details
-    res
-      .status(500)
-      .json({ error: "Something went wrong", details: error.message });
+    console.error('Error creating post:', error);
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 };
 
@@ -145,14 +155,13 @@ export const getPostById = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const postId = parseInt(req.params.id);
-    const { title, content, category } = req.body;
+    const { title, content, categoryId } = req.body;
     const userId = req.userId; // From auth middleware
 
     if (!userId) {
       return res.status(400).json({ error: 'User ID not found in request.' });
     }
 
-    // Fetch the post to ensure it exists and belongs to the user
     const post = await prisma.post.findUnique({
       where: { id: postId },
     });
@@ -165,22 +174,29 @@ export const updatePost = async (req, res) => {
       return res.status(403).json({ error: 'Forbidden. You are not authorized to update this post.' });
     }
 
-    // Update the post with the provided fields
+    // Validate categoryId if provided
+    if (categoryId) {
+      const category = await prisma.category.findUnique({
+        where: { id: parseInt(categoryId) },
+      });
+      if (!category) {
+        return res.status(400).json({ error: 'Invalid category ID' });
+      }
+    }
+
     const updatedPost = await prisma.post.update({
       where: { id: postId },
       data: {
         title,
         content,
-        category,
+        categoryId: categoryId ? parseInt(categoryId) : post.categoryId,
       },
     });
 
-
-    
     res.json({ message: 'Post updated successfully', post: updatedPost });
   } catch (error) {
-    console.error('Error updating post:', error); // Log the error details
-    res.status(500).json({ error: 'Something went wrong', details: error.message }); 
+    console.error('Error updating post:', error);
+    res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 };
 

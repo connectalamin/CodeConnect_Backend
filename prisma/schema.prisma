@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// schema.prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -10,34 +9,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
 model User {
   id          Int       @id @default(autoincrement())
   email       String    @unique
   name        String?
   password    String
+  role        UserRole  @default(USER) // Add role field with default USER
   posts       Post[]
   comments    Comment[]
   votes       Vote[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  image       String?   // URL to the user's profile image
-  classId     String?   // Class ID of the user
-  session     String?   // Session of the user (e.g., 2021-2025)
-  batch       String?   // Batch of the user (e.g., 2023)
-  dept        String?   // Department of the user (e.g., CSE, ICT)
-  university  String?   // University name
-  occupation  String?   // Current occupation of the user
-  expertise   String[]  // Expertise tags (array of strings)
-  karmaPoints Int       @default(0) // Karma points based on user actions
+  image       String?
+  classId     String?
+  session     String?
+  batch       String?
+  dept        String?
+  university  String?
+  occupation  String?
+  expertise   String[]
+  karmaPoints Int       @default(0)
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Post {
   id           Int       @id @default(autoincrement())
   title        String
   content      String
-  category     String
+  categoryId   Int // Replace category String with categoryId
+  category     Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   userId       Int
-  user         User      @relation(fields: [userId], references: [id])
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments     Comment[]
   votes        Vote[]
   bestAnswer   Comment?  @relation("BestAnswer", fields: [bestAnswerId], references: [id])
@@ -53,7 +67,7 @@ model Comment {
   postId         Int
   userId         Int
   post           Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user           User     @relation(fields: [userId], references: [id])
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   votes          Vote[]
   isBestAnswer   Boolean  @default(false)
   bestAnswerPost Post?    @relation("BestAnswer")
@@ -64,11 +78,11 @@ model Comment {
 
 model Vote {
   id        Int      @id @default(autoincrement())
-  value     Int // +1 for upvote, -1 for downvote
-  postId    Int? // For question votes
-  commentId Int? // For answer votes
+  value     Int
+  postId    Int?
+  commentId Int?
   userId    Int
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

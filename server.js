@@ -6,7 +6,8 @@ import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import voteRoutes from "./routes/voteRoutes.js"
 import profileRoutes from "./routes/profileRoutes.js"
-
+import categoryRoutes from "./routes/categoryRoutes.js"
+import deleteUserRoutes from "./routes/userRoutes.js"
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,8 @@ app.use("/api", postRoutes);
 app.use("/api/post", commentRoutes);
 app.use("/api/", voteRoutes);
 app.use('/api', profileRoutes);
+app.use('/admin/users', deleteUserRoutes);
+app.use('/admin/categories', categoryRoutes);
 
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
