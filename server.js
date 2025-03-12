@@ -11,9 +11,8 @@ import deleteUserRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT; // Remove || 5000 for production clarity
 
-// Update CORS for production
 const allowedOrigins = [process.env.FRONTEND_URL || "https://victorious-glacier-06790f710.6.azurestaticapps.net"];
 app.use(cors({
   origin: allowedOrigins,
