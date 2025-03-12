@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import prisma from "./DB/db.config.js"; // Import existing Prisma Client
 import authRoutes from "./routes/authRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
@@ -11,7 +12,7 @@ import deleteUserRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT; // Remove || 5000 for production clarity
+const port = process.env.PORT;
 
 const allowedOrigins = [process.env.FRONTEND_URL || "https://victorious-glacier-06790f710.6.azurestaticapps.net"];
 app.use(cors({
@@ -23,6 +24,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Pass prisma to routes
+app.use((req, res, next) => {
+  req.prisma = prisma;
+  next();
+});
+
 app.use("/auth", authRoutes);
 app.use("/api", postRoutes);
 app.use("/api/post", commentRoutes);
@@ -31,5 +38,27 @@ app.use('/api', profileRoutes);
 app.use('/admin/users', deleteUserRoutes);
 app.use('/admin/categories', categoryRoutes);
 
+// Health check endpoint
+app.get("/health", async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`; // Test database connection
+    res.json({ status: "healthy", message: "Database connection successful" });
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    res.status(500).json({ status: "unhealthy", message: "Database connection failed" });
+  }
+});
+
 app.get("/", (req, res) => res.send("Hello World!"));
-app.listen(port, () => console.log(`Server running on port ${port}!`));
+
+const server = app.listen(port, () => console.log(`Server running on port ${port}!`));
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    prisma.$disconnect().then(() => {
+      console.log('Prisma Client disconnected');
+      process.exit(0);
+    });
+  });
+});
