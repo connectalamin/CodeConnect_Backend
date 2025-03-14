@@ -20,6 +20,12 @@ app.use(cors({
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+// const allowedOrigins = [process.env.FRONTEND_LOCAL];
+// app.use(cors({
+//   origin: allowedOrigins,
+//   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
