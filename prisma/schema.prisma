@@ -1,5 +1,3 @@
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,56 +7,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  USER
-}
-
 model User {
   id          Int       @id @default(autoincrement())
   email       String    @unique
   name        String?
   password    String
-  role        UserRole  @default(USER) // Add role field with default USER
-  posts       Post[]
-  comments    Comment[]
-  votes       Vote[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  image       String?
-  classId     String?
-  session     String?
   batch       String?
+  classId     String?
   dept        String?
-  university  String?
-  occupation  String?
   expertise   String[]
+  image       String?
   karmaPoints Int       @default(0)
+  occupation  String?
+  session     String?
+  university  String?
+  role        UserRole  @default(USER)
+  comments    Comment[]
+  posts       Post[]
+  votes       Vote[]
 }
 
 model Category {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  posts     Post[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  posts     Post[]
 }
 
 model Post {
   id           Int       @id @default(autoincrement())
   title        String
   content      String
-  categoryId   Int // Replace category String with categoryId
-  category     Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   userId       Int
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comments     Comment[]
-  votes        Vote[]
-  bestAnswer   Comment?  @relation("BestAnswer", fields: [bestAnswerId], references: [id])
   bestAnswerId Int?      @unique
-  voteCount    Int       @default(0)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  voteCount    Int       @default(0)
+  categoryId   Int
+  comments     Comment[]
+  bestAnswer   Comment?  @relation("BestAnswer", fields: [bestAnswerId], references: [id])
+  category     Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votes        Vote[]
 }
 
 model Comment {
@@ -66,14 +59,14 @@ model Comment {
   content        String
   postId         Int
   userId         Int
-  post           Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  votes          Vote[]
   isBestAnswer   Boolean  @default(false)
-  bestAnswerPost Post?    @relation("BestAnswer")
-  voteCount      Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  voteCount      Int      @default(0)
+  post           Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bestAnswerPost Post?    @relation("BestAnswer")
+  votes          Vote[]
 }
 
 model Vote {
@@ -82,7 +75,12 @@ model Vote {
   postId    Int?
   commentId Int?
   userId    Int
-  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }
