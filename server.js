@@ -14,19 +14,19 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
-const allowedOrigins = [process.env.FRONTEND_URL || "https://victorious-glacier-06790f710.6.azurestaticapps.net"];
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
-// const allowedOrigins = [process.env.FRONTEND_LOCAL];
+// const allowedOrigins = [process.env.FRONTEND_URL || "https://victorious-glacier-06790f710.6.azurestaticapps.net"];
 // app.use(cors({
-//   origin: true, // Allow all origins during development
+//   origin: allowedOrigins,
 //   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
 //   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true
 // }));
+const allowedOrigins = [process.env.FRONTEND_LOCAL];
+app.use(cors({
+  origin: true, // Allow all origins during development
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
