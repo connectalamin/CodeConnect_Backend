@@ -9,6 +9,7 @@ import voteRoutes from "./routes/voteRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import deleteUserRoutes from "./routes/userRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -44,6 +45,7 @@ app.use("/api/", voteRoutes);
 app.use('/api', profileRoutes);
 app.use('/admin/users', deleteUserRoutes);
 app.use('/admin/categories', categoryRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check endpoint
 app.get("/health", async (req, res) => {

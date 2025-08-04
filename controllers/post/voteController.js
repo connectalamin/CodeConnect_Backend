@@ -1,5 +1,6 @@
 import prisma from '../../DB/db.config.js';
 import { calculateRanking } from '../../utils/rankingUtils.js';
+import { createVotePostNotification, createVoteCommentNotification } from '../../utils/notificationService.js';
 
 // Upvote/Downvote a Post or Comment
 export const createOrUpdateVote = async (req, res) => {
@@ -103,11 +104,17 @@ export const createOrUpdateVote = async (req, res) => {
         where: { id: postId },
         data: { voteCount: { increment: value } }
       });
+      
+      // Create notification for post vote
+      await createVotePostNotification(userId, postId, value);
     } else if (commentId) {
       await prisma.comment.update({
         where: { id: commentId },
         data: { voteCount: { increment: value } }
       });
+      
+      // Create notification for comment vote
+      await createVoteCommentNotification(userId, commentId, value);
     }
 
     // Recalculate and update karma points

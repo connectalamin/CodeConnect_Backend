@@ -1,5 +1,6 @@
 import prisma from "../../DB/db.config.js";
 import { calculateRanking } from '../../utils/rankingUtils.js';
+import { createCommentPostNotification, createBestAnswerNotification } from '../../utils/notificationService.js';
 
 // Create a comment
 export const createComment = async (req, res) => {
@@ -20,6 +21,9 @@ export const createComment = async (req, res) => {
           postId: postId,
         },
       });
+      
+      // Create notification for comment on post
+      await createCommentPostNotification(userId, postId, comment.id);
   
       res.status(201).json({ message: "Comment created successfully", comment });
     } catch (error) {
@@ -200,6 +204,11 @@ export const checkBestAnswer = async (req,res)=>{
     });
     
     await updateKarmaPoints(comment.userId);
+
+    // Create notification for best answer if marked as best answer
+    if (isBestAnswer) {
+      await createBestAnswerNotification(comment.postId, commentId);
+    }
 
     const message = isBestAnswer
     ? 'Best answer marked successfully'
