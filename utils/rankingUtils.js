@@ -3,7 +3,7 @@ export const calculateRanking = (karmaPoints) => {
   const ranks = [
     { threshold: 25000, rank: 'Field Marshal' },
     { threshold: 10000, rank: 'Marshal' },
-    { threshold: 70000, rank: 'General' },
+    { threshold: 7000, rank: 'General' },
     { threshold: 5000, rank: 'Lieutenant General' },
     { threshold: 3000, rank: 'Major General' },
     { threshold: 2000, rank: 'Brigadier General' },
