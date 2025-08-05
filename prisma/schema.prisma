@@ -12,6 +12,11 @@ model User {
   email       String    @unique
   name        String?
   password    String
+  isEmailVerified Boolean @default(false)
+  emailVerificationToken String?
+  emailVerificationExpires DateTime?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   batch       String?
