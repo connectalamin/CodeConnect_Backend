@@ -27,6 +27,7 @@ model User {
   comments    Comment[]
   posts       Post[]
   votes       Vote[]
+  savedPosts  SavedPost[]
   notifications Notification[]
   relatedNotifications Notification[] @relation("NotificationRelatedUser")
   notificationPreferences NotificationPreference?
@@ -55,6 +56,7 @@ model Post {
   category     Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   votes        Vote[]
+  savedPosts   SavedPost[]
   notifications Notification[]
 }
 
@@ -83,6 +85,18 @@ model Vote {
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SavedPost {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, postId])
 }
 
 model Notification {

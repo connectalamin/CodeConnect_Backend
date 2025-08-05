@@ -11,6 +11,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import deleteUserRoutes from "./routes/userRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
+import savedPostRoutes from "./routes/savedPostRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -48,6 +49,7 @@ app.use('/admin/users', deleteUserRoutes);
 app.use('/admin/categories', categoryRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api', savedPostRoutes);
 
 // Health check endpoint
 app.get("/health", async (req, res) => {
