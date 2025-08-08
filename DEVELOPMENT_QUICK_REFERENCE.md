@@ -5,7 +5,48 @@
 ### Backend Setup
 ```bash
 # Install dependencies
+
+## 🛠️ Setting Up Prisma on a New PC/Clone
+
+After cloning the repository on a new machine, run the following commands to set up Prisma:
+
+```bash
+# Install dependencies (if not already done)
 npm install
+
+# Apply migrations to set up the database
+npx prisma migrate deploy
+
+# Generate Prisma client
+npx prisma generate
+
+
+
+# (Optional) Open Prisma Studio to view the database
+npx prisma studio
+```
+
+## 🌐 Network Configuration (Auto-Detection)
+
+The backend now automatically detects your network IP and handles network changes:
+
+```bash
+# Get current network information
+npm run network
+
+# Start server (automatically binds to all network interfaces)
+npm run server
+```
+
+**Features:**
+- ✅ Automatically detects your local network IP
+- ✅ No manual .env changes needed when switching networks
+- ✅ Works on any WiFi/Ethernet network
+- ✅ Mobile devices can connect using the displayed IP
+
+**Network URLs will be displayed when server starts:**
+- Local: `http://localhost:5000`
+- Network: `http://[YOUR-IP]:5000`
 
 # Start development server
 npm run server

@@ -8,7 +8,9 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "generate": "npx prisma generate",
-    "clean": "node prisma/cleanup.js"
+    "clean": "node prisma/cleanup.js",
+    "seed": "npx prisma db seed",
+    "network": "node get-network-ip.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
