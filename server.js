@@ -1,4 +1,6 @@
 import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import dotenv from "dotenv";
 import cors from "cors";
 import prisma from "./DB/db.config.js"; // Import existing Prisma Client
@@ -12,9 +14,12 @@ import deleteUserRoutes from "./routes/userRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 import savedPostRoutes from "./routes/savedPostRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import { setupChatSocket } from "./utils/chatSocket.js";
 
 dotenv.config();
 const app = express();
+const httpServer = createServer(app);
 const port = process.env.PORT;
 
 const allowedOrigins = [process.env.FRONTEND_LOCAL];
@@ -25,6 +30,15 @@ app.use(cors({
   credentials: true
 }));
 
+// Setup Socket.IO with CORS
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.FRONTEND_LOCAL || "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -33,6 +47,9 @@ app.use((req, res, next) => {
   req.prisma = prisma;
   next();
 });
+
+// Setup chat socket handlers
+setupChatSocket(io, prisma);
 
 app.use("/auth", authRoutes);
 app.use("/api", postRoutes);
@@ -44,6 +61,7 @@ app.use('/admin/categories', categoryRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api', savedPostRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Health check endpoint
 app.get("/health", async (req, res) => {
@@ -58,14 +76,17 @@ app.get("/health", async (req, res) => {
 
 app.get("/", (req, res) => res.send("Hello World!"));
 
-const server = app.listen(port, () => console.log(`Server running on port ${port}!`));
+const server = httpServer.listen(port, () => console.log(`Server running on port ${port}!`));
 process.on('SIGTERM', async () => {
   console.log('SIGTERM signal received: closing HTTP server');
   server.close(() => {
     console.log('HTTP server closed');
-    prisma.$disconnect().then(() => {
-      console.log('Prisma Client disconnected');
-      process.exit(0);
+    io.close(() => {
+      console.log('Socket.IO server closed');
+      prisma.$disconnect().then(() => {
+        console.log('Prisma Client disconnected');
+        process.exit(0);
+      });
     });
   });
 });

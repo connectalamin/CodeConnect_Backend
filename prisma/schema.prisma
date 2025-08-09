@@ -8,34 +8,37 @@ datasource db {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  email       String    @unique
-  name        String?
-  password    String
-  isEmailVerified Boolean @default(false)
-  emailVerificationToken String?
+  id                       Int                     @id @default(autoincrement())
+  email                    String                  @unique
+  name                     String?
+  password                 String
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+  batch                    String?
+  classId                  String?
+  dept                     String?
+  expertise                String[]
+  image                    String?
+  karmaPoints              Int                     @default(0)
+  occupation               String?
+  session                  String?
+  university               String?
+  role                     UserRole                @default(USER)
   emailVerificationExpires DateTime?
-  resetPasswordToken String?
-  resetPasswordExpires DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  batch       String?
-  classId     String?
-  dept        String?
-  expertise   String[]
-  image       String?
-  karmaPoints Int       @default(0)
-  occupation  String?
-  session     String?
-  university  String?
-  role        UserRole  @default(USER)
-  comments    Comment[]
-  posts       Post[]
-  votes       Vote[]
-  savedPosts  SavedPost[]
-  notifications Notification[]
-  relatedNotifications Notification[] @relation("NotificationRelatedUser")
-  notificationPreferences NotificationPreference?
+  emailVerificationToken   String?
+  isEmailVerified          Boolean                 @default(false)
+  resetPasswordExpires     DateTime?
+  resetPasswordToken       String?
+  chatMessages             ChatMessage[]
+  createdChatRooms         ChatRoom[]
+  chatRoomMembers          ChatRoomMember[]
+  comments                 Comment[]
+  relatedNotifications     Notification[]          @relation("NotificationRelatedUser")
+  notifications            Notification[]
+  notificationPreferences  NotificationPreference?
+  posts                    Post[]
+  savedPosts               SavedPost[]
+  votes                    Vote[]
 }
 
 model Category {
@@ -47,38 +50,38 @@ model Category {
 }
 
 model Post {
-  id           Int       @id @default(autoincrement())
-  title        String
-  content      String
-  userId       Int
-  bestAnswerId Int?      @unique
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  voteCount    Int       @default(0)
-  categoryId   Int
-  comments     Comment[]
-  bestAnswer   Comment?  @relation("BestAnswer", fields: [bestAnswerId], references: [id])
-  category     Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  votes        Vote[]
-  savedPosts   SavedPost[]
+  id            Int            @id @default(autoincrement())
+  title         String
+  content       String
+  userId        Int
+  bestAnswerId  Int?           @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  voteCount     Int            @default(0)
+  categoryId    Int
+  comments      Comment[]
   notifications Notification[]
+  bestAnswer    Comment?       @relation("BestAnswer", fields: [bestAnswerId], references: [id])
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  savedPosts    SavedPost[]
+  votes         Vote[]
 }
 
 model Comment {
-  id             Int      @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   content        String
   postId         Int
   userId         Int
-  isBestAnswer   Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  voteCount      Int      @default(0)
-  post           Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bestAnswerPost Post?    @relation("BestAnswer")
-  votes          Vote[]
+  isBestAnswer   Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  voteCount      Int            @default(0)
+  post           Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   notifications  Notification[]
+  bestAnswerPost Post?          @relation("BestAnswer")
+  votes          Vote[]
 }
 
 model Vote {
@@ -97,44 +100,91 @@ model SavedPost {
   userId    Int
   postId    Int
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, postId])
 }
 
 model Notification {
-  id              Int       @id @default(autoincrement())
-  userId          Int
-  type            String    // "VOTE_POST", "VOTE_COMMENT", "COMMENT_POST", "BEST_ANSWER"
-  title           String
-  message         String?
-  relatedPostId   Int?
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  type             String
+  title            String
+  message          String?
+  relatedPostId    Int?
   relatedCommentId Int?
-  relatedUserId   Int?
-  isRead          Boolean   @default(false)
-  createdAt       DateTime  @default(now())
-  
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post            Post?     @relation(fields: [relatedPostId], references: [id], onDelete: Cascade)
-  comment         Comment?  @relation(fields: [relatedCommentId], references: [id], onDelete: Cascade)
-  relatedUser     User?     @relation("NotificationRelatedUser", fields: [relatedUserId], references: [id], onDelete: Cascade)
+  relatedUserId    Int?
+  isRead           Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  comment          Comment? @relation(fields: [relatedCommentId], references: [id], onDelete: Cascade)
+  post             Post?    @relation(fields: [relatedPostId], references: [id], onDelete: Cascade)
+  relatedUser      User?    @relation("NotificationRelatedUser", fields: [relatedUserId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model NotificationPreference {
-  id                  Int      @id @default(autoincrement())
-  userId              Int      @unique
-  emailNotifications  Boolean  @default(true)
-  pushNotifications   Boolean  @default(true)
-  inAppNotifications  Boolean  @default(true)
-  notificationTypes   Json     @default("{}")
-  updatedAt           DateTime @updatedAt
-  
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @unique
+  emailNotifications Boolean  @default(true)
+  pushNotifications  Boolean  @default(true)
+  inAppNotifications Boolean  @default(true)
+  notificationTypes  Json     @default("{}")
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ChatRoom {
+  id          Int              @id @default(autoincrement())
+  name        String
+  description String
+  category    String
+  isPrivate   Boolean          @default(false)
+  joinCode    String?          @unique
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  createdById Int
+  isActive    Boolean          @default(true)
+  maxMembers  Int              @default(100)
+  messages    ChatMessage[]
+  createdBy   User             @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  members     ChatRoomMember[]
+}
+
+model ChatRoomMember {
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  chatRoomId Int
+  joinedAt   DateTime   @default(now())
+  isOnline   Boolean    @default(true)
+  lastSeen   DateTime   @default(now())
+  role       MemberRole @default(MEMBER)
+  chatRoom   ChatRoom   @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chatRoomId])
+}
+
+model ChatMessage {
+  id         Int      @id @default(autoincrement())
+  content    String
+  userId     Int
+  chatRoomId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isEdited   Boolean  @default(false)
+  isDeleted  Boolean  @default(false)
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
   ADMIN
   USER
+}
+
+enum MemberRole {
+  ADMIN
+  MODERATOR
+  MEMBER
 }
