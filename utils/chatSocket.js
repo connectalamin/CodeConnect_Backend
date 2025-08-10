@@ -81,8 +81,8 @@ export const setupChatSocket = (io, prisma) => {
       try {
         const { roomId } = data;
         
-        // Verify user is a member of the room
-  const membership = await prisma.chatRoomMember.findUnique({
+        // Verify user is a member of the room; if not and room is public, auto-add
+        let membership = await prisma.chatRoomMember.findUnique({
           where: {
             userId_chatRoomId: {
               userId: socket.userId,
@@ -93,8 +93,44 @@ export const setupChatSocket = (io, prisma) => {
         });
 
         if (!membership) {
-          socket.emit('error', { message: 'You are not a member of this room' });
-          return;
+          // Fetch room to check if it's public
+          const room = await prisma.chatRoom.findUnique({ where: { id: roomId } });
+          if (!room) {
+            socket.emit('error', { message: 'Room not found' });
+            return;
+          }
+          if (room.isPrivate) {
+            socket.emit('error', { message: 'You are not a member of this room' });
+            return;
+          }
+          // Auto-create membership for public room
+          try {
+            membership = await prisma.chatRoomMember.create({
+              data: {
+                userId: socket.userId,
+                chatRoomId: roomId,
+                role: 'MEMBER',
+                isOnline: true,
+                lastSeen: new Date()
+              },
+              include: { chatRoom: true }
+            });
+            console.log('[SOCKET][JOIN][AUTO_MEMBER]', { userId: socket.userId, roomId });
+          } catch (createErr) {
+            // Race condition safe-guard: someone else already created membership
+            if (createErr.code === 'P2002') { // Prisma unique constraint
+              membership = await prisma.chatRoomMember.findUnique({
+                where: {
+                  userId_chatRoomId: { userId: socket.userId, chatRoomId: roomId }
+                },
+                include: { chatRoom: true }
+              });
+            } else {
+              console.error('[SOCKET][JOIN][CREATE_MEMBER_ERROR]', createErr);
+              socket.emit('error', { message: 'Failed to join room' });
+              return;
+            }
+          }
         }
 
         socket.join(`room-${roomId}`);

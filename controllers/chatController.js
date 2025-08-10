@@ -425,11 +425,12 @@ export const getChatRoomMessages = async (req, res) => {
       where: {
         userId_chatRoomId: {
           userId: userId,
+          chatRoomId: roomIdInt
+        }
+      }
     });
 
     if (!membership) {
-      return res.status(403).json({
-        success: false,
       console.warn('[CHAT][MSG][MEMBERSHIP_MISSING]', { userId, roomId: roomIdInt });
       return res.status(403).json({
         success: false,
