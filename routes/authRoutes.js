@@ -44,8 +44,9 @@ router.post('/signup', signup);
 // Login Route
 router.post('/login', login);
 
-// Email Verification Routes
-router.get('/verify-email/:token', verifyEmail);
+// Email Verification Routes (support both /verify-email?token= and /verify-email/:token)
+router.get('/verify-email', verifyEmail); // query param style
+router.get('/verify-email/:token', verifyEmail); // path param style
 router.post('/resend-verification', resendVerificationEmail);
 
 // Password Reset Routes

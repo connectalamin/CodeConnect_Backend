@@ -134,20 +134,23 @@ export const login = async (req, res) => {
 // Verify Email Controller
 export const verifyEmail = async (req, res) => {
   try {
-    const { token } = req.params;
+    // Accept token from param (/verify-email/:token), query (/verify-email?token=) or body ({ token })
+    const token = req.params.token || req.query.token || req.body.token;
+
+    if (!token) {
+      return res.status(400).json({ error: 'Verification token is required.' });
+    }
 
     const user = await prisma.user.findFirst({
       where: {
         emailVerificationToken: token,
-        emailVerificationExpires: {
-          gt: new Date()
-        }
+        emailVerificationExpires: { gt: new Date() }
       }
     });
 
     if (!user) {
-      return res.status(400).json({ 
-        error: 'Invalid or expired verification token. Please request a new verification email.' 
+      return res.status(400).json({
+        error: 'Invalid or expired verification token. Please request a new verification email.'
       });
     }
 
@@ -161,9 +164,9 @@ export const verifyEmail = async (req, res) => {
       }
     });
 
-    res.json({ 
+    res.json({
       success: true,
-      message: 'Email verified successfully! You can now log in to your account.' 
+      message: 'Email verified successfully! You can now log in to your account.'
     });
   } catch (error) {
     console.error('Email verification error:', error);
