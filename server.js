@@ -23,13 +23,16 @@ const httpServer = createServer(app);
 const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  //process.env.FRONTEND_LOCAL,
-  //process.env.FRONTEND_NETWORK,
-  process.env.FRONTEND_PRODUCTION
+  process.env.FRONTEND_LOCAL,
+  process.env.FRONTEND_NETWORK,
+  process.env.FRONTEND_PRODUCTION,
+  'https://code-connect-swart.vercel.app', // Your Vercel domain
+  'http://localhost:5173', // Local development fallback
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
   origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     console.warn('[CORS] Blocked origin:', origin, 'Allowed:', allowedOrigins);
@@ -84,6 +87,8 @@ app.get("/health", async (req, res) => {
     res.status(500).json({ status: "unhealthy", message: "Database connection failed" });
   }
 });
+
+app.get("/", (req, res) => res.send("CodeConnect Backend is running!"));
 
 
 const server = httpServer.listen(port, () => console.log(`Server running on port ${port}!`));
