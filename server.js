@@ -26,8 +26,9 @@ const allowedOrigins = [
   process.env.FRONTEND_LOCAL,
   process.env.FRONTEND_NETWORK,
   process.env.FRONTEND_PRODUCTION,
-  'https://code-connect-swart.vercel.app', // Your Vercel domain
-  'http://localhost:5173', // Local development fallback
+  'https://code-connect-swart.vercel.app',
+     // Your Vercel domain
+  'code-connect-git-master-connectalamins-projects.vercel.app', // Local development fallback
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
