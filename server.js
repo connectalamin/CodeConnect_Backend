@@ -15,7 +15,6 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 import savedPostRoutes from "./routes/savedPostRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
-import seedRoutes from "./routes/seedRoutes.js";
 import { setupChatSocket } from "./utils/chatSocket.js";
 
 dotenv.config();
@@ -78,7 +77,6 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api', savedPostRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/api/seed', seedRoutes);
 
 // Health check endpoint
 app.get("/health", async (req, res) => {
