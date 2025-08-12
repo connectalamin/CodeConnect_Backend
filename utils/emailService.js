@@ -36,7 +36,7 @@ const getBaseUrl = () => {
     return process.env.FRONTEND_NETWORK;
   }
   // Fallback to localhost
-  return process.env.FRONTEND_LOCAL || 'http://localhost:5173';
+  return process.env.VITE_SERVER_DEFAULT_API ;
 };
 
 export const sendVerificationEmail = async (email, userName, verificationToken) => {
