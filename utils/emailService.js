@@ -35,7 +35,7 @@ const getBaseUrl = () => {
   if (process.env.FRONTEND_NETWORK) {
     return process.env.FRONTEND_NETWORK;
   }
-  // Fallback to localhost
+  // Fallback to production URL
   return process.env.FRONTEND_PRODUCTION || 'https://code-connect-swart.vercel.app';
 };
 

@@ -26,8 +26,7 @@ const allowedOrigins = [
   process.env.FRONTEND_LOCAL,
   process.env.FRONTEND_NETWORK,
   process.env.FRONTEND_PRODUCTION,
-  'https://code-connect-swart.vercel.app', // Your main Vercel domain
-  'https://code-connect-git-master-connectalamins-projects.vercel.app', // Git branch preview domain
+  'https://code-connect-swart.vercel.app', // Your Vercel domain
   'http://localhost:5173', // Local development fallback
 ].filter(Boolean); // Remove undefined values
 
