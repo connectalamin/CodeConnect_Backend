@@ -124,13 +124,21 @@ export const seedDatabase = async (req, res) => {
   try {
     console.log('🌱 Starting database seeding...');
     
-    // Clear existing data
-    console.log('🗑️ Clearing existing data...');
+    // Check existing data
+    const existingUsers = await prisma.user.count();
+    const existingCategories = await prisma.category.count();
+    const existingPosts = await prisma.post.count();
+    
+    console.log(`📊 Existing data: ${existingUsers} users, ${existingCategories} categories, ${existingPosts} posts`);
+    
+    // Only clear sample data, preserve existing admin users
+    console.log('🗑️ Clearing only sample data (preserving existing users)...');
     await prisma.vote.deleteMany();
     await prisma.comment.deleteMany();
     await prisma.post.deleteMany();
     await prisma.category.deleteMany();
-    await prisma.user.deleteMany();
+    
+    // Don't delete users - preserve existing admin and users
 
     // Create categories
     console.log('📂 Creating categories...');
@@ -138,31 +146,43 @@ export const seedDatabase = async (req, res) => {
       categoriesList.map((name) => prisma.category.create({ data: { name } }))
     );
 
-    // Create users
-    console.log('👥 Creating users...');
-    const users = await Promise.all(
-      usersList.map(async (u) =>
-        prisma.user.create({
+    // Create sample users (skip if they already exist)
+    console.log('👥 Creating sample users (skipping existing ones)...');
+    const users = [];
+    
+    for (const userData of usersList) {
+      // Check if user already exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email: userData.email }
+      });
+      
+      if (existingUser) {
+        console.log(`⏭️ Skipping existing user: ${userData.email}`);
+        users.push(existingUser);
+      } else {
+        console.log(`➕ Creating new user: ${userData.email}`);
+        const newUser = await prisma.user.create({
           data: {
-            email: u.email,
-            name: u.name,
+            email: userData.email,
+            name: userData.name,
             password: await hash('SecurePass123!', 10), // Hash the password
-            role: u.name === 'Alex Johnson' ? 'ADMIN' : 'USER',
-            classId: u.classId,
-            session: u.session,
-            batch: u.batch,
-            dept: u.dept,
-            university: u.university,
-            occupation: u.occupation,
-            expertise: u.expertise,
-            image: u.image,
+            role: 'USER', // Don't create admin users - preserve existing admin
+            classId: userData.classId,
+            session: userData.session,
+            batch: userData.batch,
+            dept: userData.dept,
+            university: userData.university,
+            occupation: userData.occupation,
+            expertise: userData.expertise,
+            image: userData.image,
             karmaPoints: Math.floor(Math.random() * 100) + 50,
             createdAt: randomDate(),
             isEmailVerified: true, // Set all users as verified for demo
           },
-        })
-      )
-    );
+        });
+        users.push(newUser);
+      }
+    }
 
     // Create posts with comments and votes
     console.log('📝 Creating posts and comments...');
@@ -232,13 +252,14 @@ export const seedDatabase = async (req, res) => {
     
     res.json({
       success: true,
-      message: 'Database seeded successfully!',
+      message: 'Sample data added successfully! (Existing users preserved)',
       stats: {
         users: users.length,
         categories: categories.length,
         posts: postList.length,
         comments: postList.reduce((sum, p) => sum + p.comments.length, 0),
-        votes: postList.reduce((sum, p) => sum + Math.abs(p.votes) + p.comments.reduce((cSum, c) => cSum + Math.abs(c.votes), 0), 0)
+        votes: postList.reduce((sum, p) => sum + Math.abs(p.votes) + p.comments.reduce((cSum, c) => cSum + Math.abs(c.votes), 0), 0),
+        note: 'Existing admin users and data were preserved'
       }
     });
   } catch (error) {
