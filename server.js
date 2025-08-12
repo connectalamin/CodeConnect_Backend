@@ -43,6 +43,7 @@ app.use(cors({
   credentials: true
 }));
 console.log('[BOOT] Allowed origins:', allowedOrigins);
+console.log('[BOOT] Server starting with CORS configured...');
 
 // Setup Socket.IO with CORS
 const io = new Server(httpServer, {
