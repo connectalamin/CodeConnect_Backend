@@ -36,7 +36,7 @@ const getBaseUrl = () => {
     return process.env.FRONTEND_NETWORK;
   }
   // Fallback to localhost
-  return process.env.VITE_SERVER_DEFAULT_API ;
+  return process.env.FRONTEND_PRODUCTION || 'https://code-connect-swart.vercel.app';
 };
 
 export const sendVerificationEmail = async (email, userName, verificationToken) => {
