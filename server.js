@@ -23,8 +23,8 @@ const httpServer = createServer(app);
 const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  process.env.FRONTEND_LOCAL,
-  process.env.FRONTEND_NETWORK,
+  //process.env.FRONTEND_LOCAL,
+  //process.env.FRONTEND_NETWORK,
   process.env.FRONTEND_PRODUCTION
 ].filter(Boolean); // Remove undefined values
 
@@ -85,7 +85,6 @@ app.get("/health", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => res.send("Hello World!"));
 
 const server = httpServer.listen(port, () => console.log(`Server running on port ${port}!`));
 process.on('SIGTERM', async () => {
