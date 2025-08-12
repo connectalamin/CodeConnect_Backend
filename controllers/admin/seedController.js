@@ -13,14 +13,26 @@ const categoriesList = [
 ];
 
 const usersList = [
-  { name: 'Alex Johnson', email: 'alex.johnson@example.com', classId: '12108036', session: '2020-2024', batch: '2020', dept: 'CSE', university: 'MIT', occupation: 'Student', expertise: ['Web', 'DevOps'], image: 'https://avatar.com/alex-johnson' },
-  { name: 'Priya Sharma', email: 'priya.sharma@example.com', classId: '12108042', session: '2021-2025', batch: '2021', dept: 'AI', university: 'IIT Delhi', occupation: 'Research Assistant', expertise: ['Machine Learning', 'Artificial Intelligence'], image: 'https://avatar.com/priya-sharma' },
-  { name: 'Mike Chen', email: 'mike.chen@example.com', classId: '12108015', session: '2019-2023', batch: '2019', dept: 'CS', university: 'Stanford', occupation: 'DevOps Engineer', expertise: ['DevOps'], image: 'https://avatar.com/mike-chen' },
-  { name: 'Sara Lopez', email: 'sara.lopez@example.com', classId: '12108078', session: '2022-2026', batch: '2022', dept: 'Mobile Dev', university: 'UCLA', occupation: 'Student', expertise: ['App'], image: 'https://avatar.com/sara-lopez' },
-  { name: 'Rahul Patel', email: 'rahul.patel@example.com', classId: '12108029', session: '2020-2024', batch: '2020', dept: 'CSE', university: 'BITS Pilani', occupation: 'Competitive Programmer', expertise: ['Competitive Programming'], image: 'https://avatar.com/rahul-patel' },
-  { name: 'Emily Davis', email: 'emily.davis@example.com', classId: '12108055', session: '2021-2025', batch: '2021', dept: 'AI', university: 'Caltech', occupation: 'AI Researcher', expertise: ['Artificial Intelligence'], image: 'https://avatar.com/emily-davis' },
-  { name: 'Omar Khan', email: 'omar.khan@example.com', classId: '12108003', session: '2018-2022', batch: '2018', dept: 'CS', university: 'NUS', occupation: 'Blockchain Developer', expertise: ['Blockchain'], image: 'https://avatar.com/omar-khan' },
-  { name: 'Liam Nguyen', email: 'liam.nguyen@example.com', classId: '12108099', session: '2022-2026', batch: '2022', dept: 'CS', university: 'UC Berkeley', occupation: 'Student', expertise: ['Data Structure & Algorithm'], image: 'https://avatar.com/liam-nguyen' },
+  { name: 'Arif Rahman', email: 'arif.rahman@example.com', classId: '12108036', session: '2020-2024', batch: '2020', dept: 'CSE', university: 'BUET', occupation: 'Student', expertise: ['Web', 'DevOps'], image: 'https://avatar.com/arif-rahman' },
+  { name: 'Fatima Khatun', email: 'fatima.khatun@example.com', classId: '12108042', session: '2021-2025', batch: '2021', dept: 'CSE', university: 'University of Dhaka', occupation: 'Research Assistant', expertise: ['Machine Learning', 'Artificial Intelligence'], image: 'https://avatar.com/fatima-khatun' },
+  { name: 'Md. Karim Uddin', email: 'karim.uddin@example.com', classId: '12108015', session: '2019-2023', batch: '2019', dept: 'CSE', university: 'BUET', occupation: 'DevOps Engineer', expertise: ['DevOps'], image: 'https://avatar.com/karim-uddin' },
+  { name: 'Rashida Begum', email: 'rashida.begum@example.com', classId: '12108078', session: '2022-2026', batch: '2022', dept: 'CSE', university: 'Comilla University', occupation: 'Student', expertise: ['App'], image: 'https://avatar.com/rashida-begum' },
+  { name: 'Tanvir Hasan', email: 'tanvir.hasan@example.com', classId: '12108029', session: '2020-2024', batch: '2020', dept: 'CSE', university: 'BUET', occupation: 'Competitive Programmer', expertise: ['Competitive Programming'], image: 'https://avatar.com/tanvir-hasan' },
+  { name: 'Nasreen Akter', email: 'nasreen.akter@example.com', classId: '12108055', session: '2021-2025', batch: '2021', dept: 'CSE', university: 'University of Dhaka', occupation: 'AI Researcher', expertise: ['Artificial Intelligence'], image: 'https://avatar.com/nasreen-akter' },
+  { name: 'Md. Omar Faruk', email: 'omar.faruk@example.com', classId: '12108003', session: '2018-2022', batch: '2018', dept: 'CSE', university: 'University of Dhaka', occupation: 'Blockchain Developer', expertise: ['Blockchain'], image: 'https://avatar.com/omar-faruk' },
+  { name: 'Shariful Islam', email: 'shariful.islam@example.com', classId: '12108099', session: '2022-2026', batch: '2022', dept: 'CSE', university: 'BUET', occupation: 'Student', expertise: ['Data Structure & Algorithm'], image: 'https://avatar.com/shariful-islam' },
+  { name: 'Ayesha Siddique', email: 'ayesha.siddique@example.com', classId: '12108101', session: '2020-2024', batch: '2020', dept: 'CSE', university: 'Jahangirnagar University', occupation: 'Software Engineer', expertise: ['Web', 'DevOps'], image: 'https://avatar.com/ayesha-siddique' },
+  { name: 'Md. Rafiqul Islam', email: 'rafiqul.islam@example.com', classId: '12108102', session: '2019-2023', batch: '2019', dept: 'CSE', university: 'University of Chittagong', occupation: 'ML Engineer', expertise: ['Machine Learning', 'Artificial Intelligence'], image: 'https://avatar.com/rafiqul-islam' },
+  { name: 'Sadia Sultana', email: 'sadia.sultana@example.com', classId: '12108103', session: '2021-2025', batch: '2021', dept: 'CSE', university: 'Comilla University', occupation: 'Research Assistant', expertise: ['Data Structure & Algorithm'], image: 'https://avatar.com/sadia-sultana' },
+  { name: 'Ruma Parvin', email: 'ruma.parvin@example.com', classId: '12108104', session: '2022-2026', batch: '2022', dept: 'CSE', university: 'University of Rajshahi', occupation: 'Student', expertise: ['App'], image: 'https://avatar.com/ruma-parvin' },
+  { name: 'Md. Abdul Kadir', email: 'abdul.kadir@example.com', classId: '12108105', session: '2020-2024', batch: '2020', dept: 'CSE', university: 'BUET', occupation: 'DevOps Engineer', expertise: ['DevOps', 'Blockchain'], image: 'https://avatar.com/abdul-kadir' },
+  { name: 'Sultana Razia', email: 'sultana.razia@example.com', classId: '12108106', session: '2021-2025', batch: '2021', dept: 'CSE', university: 'University of Dhaka', occupation: 'AI Researcher', expertise: ['Machine Learning'], image: 'https://avatar.com/sultana-razia' },
+  { name: 'Md. Aminul Islam', email: 'aminul.islam@example.com', classId: '12108107', session: '2019-2023', batch: '2019', dept: 'CSE', university: 'Jahangirnagar University', occupation: 'Full Stack Developer', expertise: ['Web'], image: 'https://avatar.com/aminul-islam' },
+  { name: 'Farzana Yasmin', email: 'farzana.yasmin@example.com', classId: '12108108', session: '2022-2026', batch: '2022', dept: 'CSE', university: 'University of Chittagong', occupation: 'Student', expertise: ['Competitive Programming'], image: 'https://avatar.com/farzana-yasmin' },
+  { name: 'Md. Jubair Ahmed', email: 'jubair.ahmed@example.com', classId: '12108109', session: '2020-2024', batch: '2020', dept: 'CSE', university: 'BUET', occupation: 'Software Engineer', expertise: ['Web', 'App'], image: 'https://avatar.com/jubair-ahmed' },
+  { name: 'Salma Akter', email: 'salma.akter@example.com', classId: '12108110', session: '2021-2025', batch: '2021', dept: 'CSE', university: 'University of Dhaka', occupation: 'Data Scientist', expertise: ['Machine Learning', 'Data Structure & Algorithm'], image: 'https://avatar.com/salma-akter' },
+  { name: 'Md. Hasanuzzaman', email: 'hasanuzzaman@example.com', classId: '12108111', session: '2019-2023', batch: '2019', dept: 'CSE', university: 'Comilla University', occupation: 'Blockchain Developer', expertise: ['Blockchain'], image: 'https://avatar.com/hasanuzzaman' },
+  { name: 'Tahura Begum', email: 'tahura.begum@example.com', classId: '12108112', session: '2022-2026', batch: '2022', dept: 'CSE', university: 'University of Rajshahi', occupation: 'Student', expertise: ['App', 'DevOps'], image: 'https://avatar.com/tahura-begum' },
 ];
 
 const postList = [
@@ -28,10 +40,12 @@ const postList = [
     category: 'Web',
     title: 'Next.js Dynamic Route Caching Issue',
     content: `I'm having trouble with ISR in Next.js 14. My dynamic routes aren't regenerating properly:\n\`\`\`javascript\nexport async function getStaticProps({ params }) {\n  const data = await fetchData(params.id);\n  return { props: { data }, revalidate: 60 };\n}\n\`\`\`\nThe page shows stale data even after 60 seconds. Any solutions?`,
-    userEmail: 'alex.johnson@example.com',
+    userEmail: 'arif.rahman@example.com',
     comments: [
-      { content: `Make sure you're using the correct revalidation approach. Try adding:\n\`\`\`javascript\nexport const dynamicParams = true;\n\`\`\`\nAnd check your CDN configuration.`, userEmail: 'sara.lopez@example.com', votes: 5, isBestAnswer: true },
-      { content: 'Have you tried clearing the Next.js cache?', userEmail: 'mike.chen@example.com', votes: -2 },
+      { content: `Make sure you're using the correct revalidation approach. Try adding:\n\`\`\`javascript\nexport const dynamicParams = true;\n\`\`\`\nAnd check your CDN configuration.`, userEmail: 'rashida.begum@example.com', votes: 5, isBestAnswer: true },
+      { content: 'Have you tried clearing the Next.js cache?', userEmail: 'karim.uddin@example.com', votes: -2 },
+      { content: 'Check if you have any middleware that might be caching responses.', userEmail: 'ayesha.siddique@example.com', votes: 3 },
+      { content: 'This could be a CDN issue. Are you using Vercel or Netlify?', userEmail: 'jubair.ahmed@example.com', votes: 2 },
     ],
     votes: 8,
   },
@@ -39,10 +53,10 @@ const postList = [
     category: 'App',
     title: 'Flutter TextField Losing Focus Randomly',
     content: `In my Flutter app, the TextField loses focus after typing a few characters:\n\`\`\`dart\nTextField(controller: _controller)\n\`\`\`\nIt's inside a StatefulWidget. How do I keep focus?`,
-    userEmail: 'sara.lopez@example.com',
+    userEmail: 'rashida.begum@example.com',
     comments: [
-      { content: `Wrap it in a FocusScope:\n\`\`\`dart\nFocusScope(child: TextField(controller: _controller))\n\`\`\`\nThis keeps the focus stable.`, userEmail: 'alex.johnson@example.com', votes: 4, isBestAnswer: true },
-      { content: 'Might be a keyboard issue—check your emulator.', userEmail: 'liam.nguyen@example.com', votes: 1 },
+      { content: `Wrap it in a FocusScope:\n\`\`\`dart\nFocusScope(child: TextField(controller: _controller))\n\`\`\`\nThis keeps the focus stable.`, userEmail: 'arif.rahman@example.com', votes: 4, isBestAnswer: true },
+      { content: 'Might be a keyboard issue—check your emulator.', userEmail: 'shariful.islam@example.com', votes: 1 },
     ],
     votes: 6,
   },
@@ -50,10 +64,10 @@ const postList = [
     category: 'Machine Learning',
     title: 'PyTorch Gradient Explosion in Transformer Model',
     content: `Training loss becomes NaN after a few iterations:\n\`\`\`python\nmodel = Transformer(d_model=512, nhead=8, num_encoder_layers=6)\noptimizer = AdamW(model.parameters(), lr=1e-3)\n\`\`\`\nGradient clipping doesn't help. Any suggestions?`,
-    userEmail: 'priya.sharma@example.com',
+    userEmail: 'fatima.khatun@example.com',
     comments: [
-      { content: `Lower the learning rate to 1e-5 and add:\n\`\`\`python\ntorch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)\n\`\`\`\nAlso use layer normalization.`, userEmail: 'emily.davis@example.com', votes: 12, isBestAnswer: true },
-      { content: 'Check your input data for NaN values first.', userEmail: 'omar.khan@example.com', votes: 3 },
+      { content: `Lower the learning rate to 1e-5 and add:\n\`\`\`python\ntorch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)\n\`\`\`\nAlso use layer normalization.`, userEmail: 'nasreen.akter@example.com', votes: 12, isBestAnswer: true },
+      { content: 'Check your input data for NaN values first.', userEmail: 'omar.faruk@example.com', votes: 3 },
     ],
     votes: 15,
   },
@@ -113,6 +127,97 @@ const postList = [
     votes: 12,
   },
 ];
+
+// Generate additional posts to reach 50+ posts
+const generateMorePosts = () => {
+  const additionalPosts = [];
+  const morePostTemplates = [
+    {
+      category: 'Web',
+      title: 'React useEffect infinite loop',
+      content: `My useEffect is causing infinite re-renders:\n\`\`\`javascript\nuseEffect(() => {\n  setData(fetchData());\n}, [data]);\n\`\`\`\nHow do I fix this?`,
+      userEmail: 'ayesha.siddique@example.com',
+      comments: [
+        { content: 'Remove data from the dependency array or use useCallback', userEmail: 'aminul.islam@example.com', votes: 8, isBestAnswer: true },
+        { content: 'You should probably use async/await properly', userEmail: 'rafiqul.islam@example.com', votes: 3 },
+        { content: 'Consider using React Query for data fetching', userEmail: 'ruma.parvin@example.com', votes: 5 },
+      ],
+      votes: 12,
+    },
+    {
+      category: 'Machine Learning',
+      title: 'TensorFlow model not converging',
+      content: `My neural network loss is not decreasing:\n\`\`\`python\nmodel = tf.keras.Sequential([\n  tf.keras.layers.Dense(128, activation='relu'),\n  tf.keras.layers.Dense(1)\n])\n\`\`\`\nAny suggestions?`,
+      userEmail: 'rafiqul.islam@example.com',
+      comments: [
+        { content: 'Try adjusting the learning rate. Start with 0.001', userEmail: 'salma.akter@example.com', votes: 7, isBestAnswer: true },
+        { content: 'Add regularization and dropout layers', userEmail: 'nasreen.akter@example.com', votes: 4 },
+        { content: 'Check your data preprocessing and normalization', userEmail: 'sultana.razia@example.com', votes: 6 },
+      ],
+      votes: 10,
+    },
+    {
+      category: 'App',
+      title: 'React Native navigation not working',
+      content: `Navigation between screens is broken:\n\`\`\`javascript\nnavigation.navigate('HomeScreen');\n\`\`\`\nGetting undefined is not an object error.`,
+      userEmail: 'ruma.parvin@example.com',
+      comments: [
+        { content: 'Make sure you have NavigationContainer wrapping your app', userEmail: 'tahura.begum@example.com', votes: 9, isBestAnswer: true },
+        { content: 'Check if you have the latest version of React Navigation', userEmail: 'rashida.begum@example.com', votes: 2 },
+        { content: 'Verify your screen names in the navigator', userEmail: 'abdul.kadir@example.com', votes: 3 },
+      ],
+      votes: 15,
+    },
+    {
+      category: 'Blockchain',
+      title: 'Smart contract gas optimization',
+      content: `My Solidity contract is using too much gas:\n\`\`\`solidity\nfunction transfer(address to, uint amount) public {\n  require(balances[msg.sender] >= amount);\n  balances[msg.sender] -= amount;\n  balances[to] += amount;\n}\n\`\`\`\nHow to optimize?`,
+      userEmail: 'hasanuzzaman@example.com',
+      comments: [
+        { content: 'Use assembly for gas-efficient operations', userEmail: 'omar.faruk@example.com', votes: 6, isBestAnswer: true },
+        { content: 'Pack your structs properly to save storage', userEmail: 'abdul.kadir@example.com', votes: 4 },
+        { content: 'Consider using SafeMath alternatives', userEmail: 'aminul.islam@example.com', votes: 2 },
+      ],
+      votes: 8,
+    },
+    {
+      category: 'DevOps',
+      title: 'Docker container memory issues',
+      content: `My Node.js app in Docker keeps running out of memory:\n\`\`\`dockerfile\nFROM node:16\nCOPY . .\nRUN npm install\nCMD ["npm", "start"]\n\`\`\`\nAny solutions?`,
+      userEmail: 'karim.uddin@example.com',
+      comments: [
+        { content: 'Set memory limits in your docker-compose or k8s manifests', userEmail: 'abdul.kadir@example.com', votes: 7, isBestAnswer: true },
+        { content: 'Use multi-stage builds to reduce image size', userEmail: 'ayesha.siddique@example.com', votes: 5 },
+        { content: 'Check for memory leaks in your Node.js code', userEmail: 'jubair.ahmed@example.com', votes: 3 },
+      ],
+      votes: 11,
+    },
+  ];
+
+  // Create multiple variations of each template
+  for (let i = 0; i < 10; i++) {
+    for (const template of morePostTemplates) {
+      const randomUser = usersList[Math.floor(Math.random() * usersList.length)];
+      const post = {
+        ...template,
+        title: template.title + ` (Case ${i + 1})`,
+        userEmail: randomUser.email,
+        votes: Math.floor(Math.random() * 20) + 1,
+        comments: template.comments.map(comment => ({
+          ...comment,
+          votes: Math.floor(Math.random() * 10) - 2, // -2 to 7
+          userEmail: usersList[Math.floor(Math.random() * usersList.length)].email
+        }))
+      };
+      additionalPosts.push(post);
+    }
+  }
+
+  return additionalPosts;
+};
+
+// Combine original posts with generated ones
+const allPosts = [...postList, ...generateMorePosts()];
 
 function randomDate() {
   const now = new Date();
@@ -186,7 +291,7 @@ export const seedDatabase = async (req, res) => {
 
     // Create posts with comments and votes
     console.log('📝 Creating posts and comments...');
-    for (const postData of postList) {
+    for (const postData of allPosts) {
       const author = users.find((u) => u.email === postData.userEmail);
       const category = categories.find((c) => c.name === postData.category);
 
@@ -256,9 +361,9 @@ export const seedDatabase = async (req, res) => {
       stats: {
         users: users.length,
         categories: categories.length,
-        posts: postList.length,
-        comments: postList.reduce((sum, p) => sum + p.comments.length, 0),
-        votes: postList.reduce((sum, p) => sum + Math.abs(p.votes) + p.comments.reduce((cSum, c) => cSum + Math.abs(c.votes), 0), 0),
+        posts: allPosts.length,
+        comments: allPosts.reduce((sum, p) => sum + p.comments.length, 0),
+        votes: allPosts.reduce((sum, p) => sum + Math.abs(p.votes) + p.comments.reduce((cSum, c) => cSum + Math.abs(c.votes), 0), 0),
         note: 'Existing admin users and data were preserved'
       }
     });
