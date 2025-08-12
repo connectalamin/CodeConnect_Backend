@@ -22,7 +22,12 @@ const app = express();
 const httpServer = createServer(app);
 const port = process.env.PORT || 5000;
 
-const allowedOrigins = [process.env.FRONTEND_LOCAL || 'http://localhost:5173'];
+const allowedOrigins = [
+  process.env.FRONTEND_LOCAL,
+  process.env.FRONTEND_NETWORK,
+  process.env.FRONTEND_PRODUCTION
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
@@ -39,7 +44,7 @@ console.log('[BOOT] Allowed origins:', allowedOrigins);
 // Setup Socket.IO with CORS
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_LOCAL || "http://localhost:5173",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true
   }
